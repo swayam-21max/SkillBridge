@@ -1,0 +1,75 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id         Int          @id @default(autoincrement())
+  name       String
+  email      String       @unique
+  password   String
+  role       String       // "learner" | "trainer" | "admin"
+  createdAt  DateTime     @default(now())
+  updatedAt  DateTime     @updatedAt
+
+  courses    Course[]     @relation("TrainerCourses")
+  enrollments Enrollment[]
+  ratings    Rating[]
+}
+model Course {
+  id          Int      @id @default(autoincrement())
+  title       String
+  description String
+  price       Float
+  createdBy   Int
+  creator     User     @relation(fields: [createdBy], references: [id])
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Skill {
+  id          Int      @id @default(autoincrement())
+  title       String
+  description String
+  courses     Course[]
+}
+
+model Course {
+  id          Int          @id @default(autoincrement())
+  title       String
+  description String
+  price       Float
+  trainer     User         @relation("TrainerCourses", fields: [trainerId], references: [id])
+  trainerId   Int
+  skill       Skill        @relation(fields: [skillId], references: [id])
+  skillId     Int
+  createdAt   DateTime     @default(now())
+
+  enrollments Enrollment[]
+  ratings     Rating[]
+}
+
+model Enrollment {
+  id        Int      @id @default(autoincrement())
+  course    Course   @relation(fields: [courseId], references: [id])
+  courseId  Int
+  learner   User     @relation(fields: [learnerId], references: [id])
+  learnerId Int
+  status    String   @default("active") // "active" | "completed"
+  enrolledAt DateTime @default(now())
+}
+
+model Rating {
+  id        Int      @id @default(autoincrement())
+  course    Course   @relation(fields: [courseId], references: [id])
+  courseId  Int
+  learner   User     @relation(fields: [learnerId], references: [id])
+  learnerId Int
+  rating    Int
+  comment   String?
+  createdAt DateTime @default(now())
+}

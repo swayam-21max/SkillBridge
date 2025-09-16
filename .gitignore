@@ -1,0 +1,17 @@
+# Node modules
+client/node_modules
+server/node_modules
+
+# Logs
+logs
+*.log
+
+# Environment variables
+server/.env
+client/.env
+
+# Build files
+client/dist
+
+# Prisma generated files
+server/prisma/migrations
