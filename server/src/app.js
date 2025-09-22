@@ -3,6 +3,8 @@ import cors from "cors";
 import prisma from "./config/db.js";          // Prisma client imported
 import authRoutes from "./routes/authRoutes.js";
 import courseRoutes from "./routes/courseRoutes.js";
+import skillRoutes from "./routes/skillRoutes.js";
+
 
 const app = express();
 
@@ -13,6 +15,8 @@ app.use(express.json());
 // Routes
 app.use("/api/auth", authRoutes);
 app.use("/api/courses", courseRoutes);
+app.use("/api/skills", skillRoutes);
+
 
 // Test route
 app.get("/", (req, res) => {
