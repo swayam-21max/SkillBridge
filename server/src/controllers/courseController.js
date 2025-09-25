@@ -4,7 +4,7 @@ import prisma from "../config/db.js";
 // ========== CREATE COURSE ==========
 export const createCourse = async (req, res) => {
   try {
-    const { title, description, price } = req.body;
+    const { title, description, price , skill } = req.body;
 
     if (!title || !description || !price || !skill) {
       return res.status(400).json({ error: "Title , description, price and skill are required" });
@@ -79,7 +79,7 @@ export const updateCourse = async (req, res) => {
     if (!course) return res.status(404).json({ error: "Course not found" });
 
     // Only the creator can update
-    if (course.createdBy !== req.user.id) {
+    if (course.trainerId !== req.user.id) {
       return res.status(403).json({ error: "You are not authorized to update this course" });
     }
 
@@ -104,7 +104,7 @@ export const deleteCourse = async (req, res) => {
     if (!course) return res.status(404).json({ error: "Course not found" });
 
     // Only the creator can delete
-    if (course.createdBy !== req.user.id) {
+    if (course.trainerId !== req.user.id) {
       return res.status(403).json({ error: "You are not authorized to delete this course" });
     }
 
