@@ -1,8 +1,21 @@
 // client/src/components/Header.jsx
 import React from 'react';
-import { NavLink } from 'react-router-dom';
+import { NavLink, useNavigate } from 'react-router-dom';
+import { useSelector, useDispatch } from 'react-redux';
+import { logout } from '../redux/authSlice'; // Import the logout action
 
 const Header = () => {
+  // --- ADDITION 1: Get user state and Redux/navigation hooks ---
+  const { user } = useSelector((state) => state.auth);
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
+  // --- ADDITION 2: Handle the logout action ---
+  const handleLogout = () => {
+    dispatch(logout());
+    navigate('/login');
+  };
+
   return (
     <header>
       <nav className="navbar navbar-expand-lg py-3">
@@ -18,10 +31,23 @@ const Header = () => {
               <li className="nav-item"><NavLink className="nav-link mx-2" to="/skills">Skills</NavLink></li>
               <li className="nav-item"><NavLink className="nav-link mx-2" to="/about">About</NavLink></li>
               <li className="nav-item"><NavLink className="nav-link mx-2" to="/contact">Contact</NavLink></li>
-              <li className="nav-item ms-lg-3">
-                <NavLink to="/login" className="btn btn-secondary-custom me-2">Login</NavLink>
-                <NavLink to="/signup" className="btn btn-primary-custom">Sign Up</NavLink>
-              </li>
+              
+              {/* --- ADDITION 3: Conditional rendering based on user state --- */}
+              {user ? (
+                // If user is logged in, show Profile and Logout
+                <>
+                  <li className="nav-item"><NavLink className="nav-link mx-2" to="/profile">Profile</NavLink></li>
+                  <li className="nav-item ms-lg-3">
+                    <button onClick={handleLogout} className="btn btn-secondary-custom">Logout</button>
+                  </li>
+                </>
+              ) : (
+                // If user is logged out, show Login and Sign Up
+                <li className="nav-item ms-lg-3">
+                  <NavLink to="/login" className="btn btn-secondary-custom me-2">Login</NavLink>
+                  <NavLink to="/signup" className="btn btn-primary-custom">Sign Up</NavLink>
+                </li>
+              )}
             </ul>
           </div>
         </div>

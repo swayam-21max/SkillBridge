@@ -1,0 +1,35 @@
+/* client/src/pages/LoginPage.css */
+
+.login-page-container {
+  background-color: var(--neutral-light-gray);
+  min-height: calc(100vh - 72px); /* Adjust based on your header height */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem 0;
+}
+
+.login-card {
+  border: none;
+  border-radius: 1.5rem;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  overflow: hidden;
+  max-width: 900px;
+  width: 100%;
+}
+
+.login-form-section {
+  padding: 3rem;
+}
+
+.login-illustration-section {
+  background-color: #e0f2fe; /* A light, welcoming blue */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.login-illustration {
+  max-width: 100%;
+  height: auto;
+}

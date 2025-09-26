@@ -1,0 +1,86 @@
+/* client/src/pages/SignupPage.css */
+
+.signup-page-container {
+  background-color: var(--neutral-light-gray);
+  min-height: calc(100vh - 72px); /* Adjust 72px based on your header height */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem 0;
+}
+
+.signup-card {
+  border: none;
+  border-radius: 1.5rem; /* rounded-2xl */
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  overflow: hidden;
+  max-width: 900px;
+  width: 100%;
+}
+
+.signup-form-section {
+  padding: 3rem;
+}
+
+.signup-illustration-section {
+  background-color: #eef2ff; /* A light blue to complement the primary */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.signup-illustration {
+  max-width: 100%;
+  height: auto;
+}
+
+/* Custom Radio Buttons for Role Selection */
+.role-selector .form-check-input {
+  display: none;
+}
+.role-selector .form-check-label {
+  display: block;
+  border: 2px solid #E5E7EB;
+  border-radius: 0.75rem;
+  padding: 1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-align: center;
+}
+.role-selector .form-check-input:checked + .form-check-label {
+  border-color: var(--primary-blue);
+  background-color: #eff6ff;
+  color: var(--primary-blue);
+  box-shadow: 0 0 0 3px rgba(30, 64, 175, 0.2);
+}
+.role-selector .form-check-label:hover {
+  border-color: #d1d5db;
+}
+.social-login-divider {
+  display: flex;
+  align-items: center;
+  text-align: center;
+  color: #6B7280;
+  margin: 1.5rem 0;
+}
+.social-login-divider::before,
+.social-login-divider::after {
+  content: '';
+  flex: 1;
+  border-bottom: 1px solid #E5E7EB;
+}
+.social-login-divider:not(:empty)::before {
+  margin-right: .25em;
+}
+.social-login-divider:not(:empty)::after {
+  margin-left: .25em;
+}
+
+.btn-social {
+  width: 100%;
+  margin-bottom: 0.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
