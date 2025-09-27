@@ -7,7 +7,7 @@ import LoginPage from './pages/Login';
 import SignupPage from './pages/Register';
 import CoursesPage from './pages/Courses';
 import ProfilePage from './pages/Profile';
-import Navbar from './components/Navbar';
+import AboutPage from './pages/AboutPage';
 
 
 function App() {
@@ -21,6 +21,7 @@ function App() {
         <main className="flex-grow-1">
           <Routes>
             <Route path="/" element={<HomePage />} />
+            <Route path="/about" element={<AboutPage />} />
             <Route path="/login" element={<LoginPage />} />
             <Route path="/signup" element={<SignupPage />} />
             <Route path="/courses" element={<CoursesPage />} />

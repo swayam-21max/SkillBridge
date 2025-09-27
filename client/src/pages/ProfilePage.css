@@ -1,0 +1,85 @@
+/* client/src/pages/ProfilePage.css */
+
+.profile-page-container {
+  background-color: var(--neutral-light-gray);
+}
+
+/* --- Profile Header --- */
+.profile-header {
+  background: linear-gradient(135deg, #1e40af 0%, #1d4ed8 100%);
+  color: white;
+  padding: 3rem 0;
+  border-bottom-left-radius: 2rem;
+  border-bottom-right-radius: 2rem;
+}
+
+.profile-picture {
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 4px solid white;
+  box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1);
+}
+
+.profile-stats-card {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  border-radius: 1rem;
+  padding: 1.5rem;
+  text-align: center;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.stat-value {
+  font-size: 2rem;
+  font-weight: 700;
+}
+
+.stat-label {
+  font-size: 0.9rem;
+  opacity: 0.8;
+}
+
+/* --- Tab Navigation --- */
+.profile-nav .nav-link {
+  color: var(--text-light);
+  font-weight: 600;
+  border: none;
+  border-bottom: 3px solid transparent;
+}
+
+.profile-nav .nav-link.active {
+  color: var(--primary-blue);
+  border-bottom-color: var(--primary-blue);
+  background-color: transparent;
+}
+
+/* --- Course Card with Progress --- */
+.enrolled-course-card {
+  border: none;
+  border-radius: 1.5rem;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05);
+  background-color: white;
+  overflow: hidden;
+}
+
+.progress-bar {
+  background-color: var(--accent-green);
+}
+
+/* --- Skill Progress Card --- */
+.skill-card {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1.5rem;
+  border-radius: 1.5rem;
+  background-color: white;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+}
+
+.circular-progress {
+  width: 60px;
+  height: 60px;
+}
