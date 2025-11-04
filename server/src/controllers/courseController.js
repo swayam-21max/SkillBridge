@@ -4,13 +4,13 @@ import prisma from "../config/db.js";
 // ========== CREATE COURSE ==========
 export const createCourse = async (req, res) => {
   try {
+    // Note: 'skill' should be the ID of the skill
     const { title, description, price , skill } = req.body;
 
     if (!title || !description || !price || !skill) {
-      return res.status(400).json({ error: "Title , description, price and skill are required" });
+      return res.status(400).json({ error: "Title, description, price and skill are required" });
     }
 
-    // Only trainers can create courses
     if (req.user.role !== "trainer") {
       return res.status(403).json({ error: "Only trainers can create courses" });
     }
@@ -20,10 +20,9 @@ export const createCourse = async (req, res) => {
         title,
         description,
         price,
-        skill,
-        trainer:
-        {
-        connect: {id : req.user.id}
+        skillId: parseInt(skill), // Connect to the skill via its ID
+        trainer: { // Connect to the trainer who is making the request
+          connect: {id : req.user.id}
         },
       },
     });
@@ -39,7 +38,14 @@ export const createCourse = async (req, res) => {
 export const getAllCourses = async (req, res) => {
   try {
     const courses = await prisma.course.findMany({
-      include: { creator: { select: { id: true, name: true, email: true } } },
+      include: {
+        // FIX: Changed 'creator' to 'trainer'
+        trainer: { 
+          select: { 
+            name: true 
+          } 
+        } 
+      },
       orderBy: { createdAt: "desc" },
     });
 
@@ -57,7 +63,15 @@ export const getCourseById = async (req, res) => {
 
     const course = await prisma.course.findUnique({
       where: { id: parseInt(id) },
-      include: { creator: { select: { id: true, name: true, email: true } } },
+      include: { 
+        // FIX: Changed 'creator' to 'trainer'
+        trainer: { 
+          select: { 
+            name: true, 
+            email: true 
+          } 
+        } 
+      },
     });
 
     if (!course) return res.status(404).json({ error: "Course not found" });
@@ -78,7 +92,7 @@ export const updateCourse = async (req, res) => {
     const course = await prisma.course.findUnique({ where: { id: parseInt(id) } });
     if (!course) return res.status(404).json({ error: "Course not found" });
 
-    // Only the creator can update
+    // FIX: Changed 'course.createdBy' to 'course.trainerId'
     if (course.trainerId !== req.user.id) {
       return res.status(403).json({ error: "You are not authorized to update this course" });
     }
@@ -103,7 +117,7 @@ export const deleteCourse = async (req, res) => {
     const course = await prisma.course.findUnique({ where: { id: parseInt(id) } });
     if (!course) return res.status(404).json({ error: "Course not found" });
 
-    // Only the creator can delete
+    // FIX: Changed 'course.createdBy' to 'course.trainerId'
     if (course.trainerId !== req.user.id) {
       return res.status(403).json({ error: "You are not authorized to delete this course" });
     }

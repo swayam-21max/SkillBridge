@@ -8,8 +8,7 @@ import { BookOpen, Zap, HeartHandshake, Gem } from 'lucide-react';
 import TestimonialSlider from '../components/TestimonialSlider';
 import FAQ from '../components/FAQ';
 import './AboutPage.css';
-import swayamProfileImage from '../assets/Swayam Pro.png';
-
+import swayamProfileImage from '../assets/Swayam Pro.png'; // Your image import
 
 // Reusable component for sections to reduce repetition
 const AnimatedSection = ({ children, className }) => {
@@ -85,14 +84,14 @@ const AboutPage = () => {
       {/* 2. Our Mission */}
       <AnimatedSection className="mission-section">
         <div className="container">
-          <div className="row align-items-center">
+          <div className="row align-items/center">
             <div className="col-lg-6">
               <h2 className="fw-bold mb-4">Why SkillBridge Exists</h2>
               <p className="text-muted">Our mission is to make quality education accessible to everyone, everywhere, closing the gap between learning and real-world application. We help trainers share their expertise globally and empower learners to achieve their career goals.</p>
               <p className="mission-quote mt-4">We believe skills are the true currency of the future.</p>
             </div>
             <div className="col-lg-6 text-center">
-              <img src="https://plus.unsplash.com/premium_vector-1753339756852-318466200b61?q=80&w=1025&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Mission Illustration" className="img-fluid"/>
+              <img src="https://cdni.iconscout.com/illustration/premium/thumb/mission-and-vision-8067424-6423945.png" alt="Mission Illustration" className="img-fluid"/>
             </div>
           </div>
         </div>

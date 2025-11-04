@@ -2,12 +2,11 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Star, BarChart2 } from 'lucide-react';
-import { Link } from 'react-router-dom';
 
 const CourseCard = ({ course }) => {
-  // Placeholder data until we add these to the schema
+  // Placeholder data until we have it from the backend
   const rating = 4.5;
-  const reviews = Math.floor(Math.random() * 1500) + 100; // Random reviews
+  const reviews = 1234;
   const difficulty = 'Beginner';
   const trainerImage = 'https://via.placeholder.com/40';
 
@@ -28,17 +27,13 @@ const CourseCard = ({ course }) => {
           </div>
         </div>
         <h5 className="card-title mt-1">{course.title}</h5>
-        
-        {/* We use the trainer name from the backend data */}
         <div className="d-flex align-items-center my-3">
           <img src={trainerImage} alt={course.trainer.name} className="rounded-circle me-2" width="40" height="40" />
           <span className="trainer-name">{course.trainer.name}</span>
         </div>
-
         <div className="mt-auto d-flex justify-content-between align-items-center">
           <span className="price">₹{course.price}</span>
-          {/* Link to a future course detail page */}
-          <Link to={`/course/${course.id}`} className="btn btn-primary-custom btn-sm">Enroll Now</Link>
+          <a href="#" className="btn btn-primary-custom btn-sm">Enroll Now</a>
         </div>
       </div>
     </motion.div>
