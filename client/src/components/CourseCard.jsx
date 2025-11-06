@@ -1,15 +1,42 @@
 // client/src/components/CourseCard.jsx
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Star, BarChart2 } from 'lucide-react';
+import { Star } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+import { enrollInCourse } from '../redux/enrollmentSlice';
 
 const CourseCard = ({ course }) => {
+  const dispatch = useDispatch();
+  const { user } = useSelector((state) => state.auth);
+
   // Placeholder data until we add these to the schema
   const rating = 4.5;
   const reviews = Math.floor(Math.random() * 1500) + 100; // Random reviews
   const difficulty = 'Beginner';
   const trainerImage = 'https://via.placeholder.com/40';
+
+  const handleEnroll = (e) => {
+    e.preventDefault(); // Prevent link navigation
+    if (!user) {
+      alert('Please log in to enroll in a course.');
+      return;
+    }
+    if (user.role !== 'learner') {
+      alert('Only learners can enroll in courses.');
+      return;
+    }
+    
+    dispatch(enrollInCourse(course.id))
+      .unwrap()
+      .then(() => {
+        alert('Enrollment successful!');
+        // Optionally, you could disable the button or show "Enrolled"
+      })
+      .catch((error) => {
+        alert(`Enrollment failed: ${error.error}`);
+      });
+  };
 
   return (
     <motion.div
@@ -37,8 +64,15 @@ const CourseCard = ({ course }) => {
 
         <div className="mt-auto d-flex justify-content-between align-items-center">
           <span className="price">₹{course.price}</span>
-          {/* Link to a future course detail page */}
-          <Link to={`/course/${course.id}`} className="btn btn-primary-custom btn-sm">Enroll Now</Link>
+          
+          {/* If user is a learner, the button enrolls.
+            Otherwise, it's just a link to the course page (for trainers/guests).
+          */}
+          {user && user.role === 'learner' ? (
+            <button onClick={handleEnroll} className="btn btn-primary-custom btn-sm">Enroll Now</button>
+          ) : (
+            <Link to={`/course/${course.id}`} className="btn btn-primary-custom btn-sm">View Details</Link>
+          )}
         </div>
       </div>
     </motion.div>

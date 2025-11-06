@@ -27,7 +27,10 @@ const Header = () => {
           <div className="collapse navbar-collapse" id="navbarNav">
             <ul className="navbar-nav ms-auto align-items-center">
               <li className="nav-item"><NavLink className="nav-link mx-2" to="/">Home</NavLink></li>
-              <li className="nav-item"><NavLink className="nav-link mx-2" to="/CoursesPage">Courses</NavLink></li>
+              
+              {/* THIS IS THE FIX 👇 */}
+              <li className="nav-item"><NavLink className="nav-link mx-2" to="/courses">Courses</NavLink></li>
+              
               <li className="nav-item"><NavLink className="nav-link mx-2" to="/skills">Skills</NavLink></li>
               <li className="nav-item"><NavLink className="nav-link mx-2" to="/about">About</NavLink></li>
               <li className="nav-item"><NavLink className="nav-link mx-2" to="/contact">Contact</NavLink></li>

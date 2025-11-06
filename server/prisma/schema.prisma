@@ -54,6 +54,7 @@ model Course {
   title       String
   description String
   price       Float
+    image       String?  
 
   // Relations
   trainer     User         @relation("TrainerCourses", fields: [trainerId], references: [id]) // Trainer creating the course

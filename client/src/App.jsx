@@ -11,6 +11,7 @@ import SignupPage from './pages/Register';
 import CoursesPage from './pages/CoursesPage';
 import ProfilePage from './pages/Profile';
 import AboutPage from './pages/AboutPage'; // This one was already correct
+import CourseDetailsPage from './pages/CourseDetailsPage'; // <-- 1. IMPORT
 
 function App() {
   return (
@@ -25,6 +26,7 @@ function App() {
             <Route path="/login" element={<LoginPage />} />
             <Route path="/signup" element={<SignupPage />} />
             <Route path="/courses" element={<CoursesPage />} />
+            <Route path="/course/:id" element={<CourseDetailsPage />} />
             
             {/* Protected Routes */}
             <Route path="/profile" element={<PrivateRoute />}>

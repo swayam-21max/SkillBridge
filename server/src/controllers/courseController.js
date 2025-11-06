@@ -4,8 +4,7 @@ import prisma from "../config/db.js";
 // ========== CREATE COURSE ==========
 export const createCourse = async (req, res) => {
   try {
-    // Note: 'skill' should be the ID of the skill
-    const { title, description, price , skill } = req.body;
+    const { title, description, price, skill, image } = req.body; // Added image
 
     if (!title || !description || !price || !skill) {
       return res.status(400).json({ error: "Title, description, price and skill are required" });
@@ -20,9 +19,10 @@ export const createCourse = async (req, res) => {
         title,
         description,
         price,
-        skillId: parseInt(skill), // Connect to the skill via its ID
-        trainer: { // Connect to the trainer who is making the request
-          connect: {id : req.user.id}
+        image: image || null, // Add the image URL (or null if not provided)
+        skillId: parseInt(skill),
+        trainer: {
+          connect: { id: req.user.id }
         },
       },
     });
@@ -39,12 +39,17 @@ export const getAllCourses = async (req, res) => {
   try {
     const courses = await prisma.course.findMany({
       include: {
-        // FIX: Changed 'creator' to 'trainer'
-        trainer: { 
-          select: { 
-            name: true 
-          } 
-        } 
+        trainer: {
+          select: {
+            name: true
+          }
+        },
+        // Include the skill data as well
+        skill: {
+          select: {
+            name: true
+          }
+        }
       },
       orderBy: { createdAt: "desc" },
     });
@@ -63,14 +68,20 @@ export const getCourseById = async (req, res) => {
 
     const course = await prisma.course.findUnique({
       where: { id: parseInt(id) },
-      include: { 
-        // FIX: Changed 'creator' to 'trainer'
-        trainer: { 
-          select: { 
-            name: true, 
-            email: true 
-          } 
-        } 
+      include: {
+        trainer: {
+          select: {
+            name: true,
+            email: true
+          }
+        },
+        // --- THIS IS THE FIX ---
+        // We must also include the skill data for the details page
+        skill: {
+          select: {
+            name: true
+          }
+        }
       },
     });
 
@@ -87,19 +98,23 @@ export const getCourseById = async (req, res) => {
 export const updateCourse = async (req, res) => {
   try {
     const { id } = req.params;
-    const { title, description, price } = req.body;
+    const { title, description, price, image } = req.body; // Added image
 
     const course = await prisma.course.findUnique({ where: { id: parseInt(id) } });
     if (!course) return res.status(404).json({ error: "Course not found" });
 
-    // FIX: Changed 'course.createdBy' to 'course.trainerId'
     if (course.trainerId !== req.user.id) {
       return res.status(403).json({ error: "You are not authorized to update this course" });
     }
 
     const updatedCourse = await prisma.course.update({
       where: { id: parseInt(id) },
-      data: { title, description, price: parseFloat(price) },
+      data: {
+        title,
+        description,
+        price: parseFloat(price),
+        image
+      },
     });
 
     res.json({ message: "Course updated successfully", updatedCourse });
@@ -113,16 +128,26 @@ export const updateCourse = async (req, res) => {
 export const deleteCourse = async (req, res) => {
   try {
     const { id } = req.params;
+    const courseId = parseInt(id);
 
-    const course = await prisma.course.findUnique({ where: { id: parseInt(id) } });
+    const course = await prisma.course.findUnique({ where: { id: courseId } });
     if (!course) return res.status(404).json({ error: "Course not found" });
 
-    // FIX: Changed 'course.createdBy' to 'course.trainerId'
     if (course.trainerId !== req.user.id) {
       return res.status(403).json({ error: "You are not authorized to delete this course" });
     }
 
-    await prisma.course.delete({ where: { id: parseInt(id) } });
+    // --- SAFETY CHECK ---
+    // Before deleting the course, delete related enrollments and ratings
+    await prisma.enrollment.deleteMany({
+      where: { courseId: courseId }
+    });
+    await prisma.rating.deleteMany({
+      where: { courseId: courseId }
+    });
+
+    // Now delete the course
+    await prisma.course.delete({ where: { id: courseId } });
 
     res.json({ message: "Course deleted successfully" });
   } catch (error) {
