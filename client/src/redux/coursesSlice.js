@@ -4,10 +4,12 @@ import api from '../services/api';
 
 export const fetchCourses = createAsyncThunk(
   'courses/fetchCourses',
-  async (_, { rejectWithValue }) => {
+  // Accepts a params object for search/filter/sort
+  async (params = {}, { rejectWithValue }) => {
     try {
-      // FIX: Changed '/courses' to '/courses' (already correct)
-      const response = await api.get('/courses');
+      // Use URLSearchParams to correctly format query parameters
+      const query = new URLSearchParams(params).toString();
+      const response = await api.get(`/courses?${query}`);
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response.data);
@@ -19,7 +21,6 @@ export const fetchCourseById = createAsyncThunk(
   'courses/fetchCourseById',
   async (courseId, { rejectWithValue }) => {
     try {
-      // FIX: Changed '/api/courses/${courseId}' to '/courses/${courseId}'
       const response = await api.get(`/courses/${courseId}`);
       return response.data;
     } catch (error) {
@@ -28,20 +29,17 @@ export const fetchCourseById = createAsyncThunk(
   }
 );
 
-// ... (rest of the file is the same)
-
 const coursesSlice = createSlice({
   name: 'courses',
   initialState: {
     all: [],
-    selectedCourse: null, // <-- 2. ADD NEW STATE
+    selectedCourse: null, 
     status: 'idle', // 'idle' | 'loading' | 'succeeded' | 'failed'
     selectedStatus: 'idle',
     error: null,
   },
   reducers: {
-    // We will add filter and sort reducers here later
-    clearSelectedCourse: (state) => { // <-- 3. ADD A CLEARING REDUCER
+    clearSelectedCourse: (state) => {
       state.selectedCourse = null;
       state.selectedStatus = 'idle';
     }
@@ -59,7 +57,6 @@ const coursesSlice = createSlice({
         state.status = 'failed';
         state.error = action.payload ? action.payload.error : 'Could not fetch courses';
       })
-      // --- 4. ADD EXTRA REDUCERS ---
       .addCase(fetchCourseById.pending, (state) => {
         state.selectedStatus = 'loading';
       })
@@ -74,5 +71,5 @@ const coursesSlice = createSlice({
   },
 });
 
-export const { clearSelectedCourse } = coursesSlice.actions; // <-- 5. EXPORT REDUCER
+export const { clearSelectedCourse } = coursesSlice.actions; 
 export default coursesSlice.reducer;

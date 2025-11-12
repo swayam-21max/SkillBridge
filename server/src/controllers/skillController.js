@@ -32,14 +32,15 @@ export const createSkill = async (req, res) => {
 };
 
 /**
- * GET ALL SKILLS (Public)
+ * GET ALL SKILLS (Public) - New/Improved
  */
 export const getAllSkills = async (req, res) => {
   try {
     const skills = await prisma.skill.findMany({
-      orderBy: { createdAt: "desc" },
+      orderBy: { createdAt: "asc" }, // Ordered by creation time
     });
-    res.json(skills);
+    // Returning simple { id, name } structure for the frontend filters
+    res.json(skills.map(s => ({ id: s.id, name: s.name })));
   } catch (error) {
     console.error("Error fetching skills:", error);
     res.status(500).json({ error: "Server error" });

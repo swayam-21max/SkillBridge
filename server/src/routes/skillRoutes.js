@@ -2,7 +2,7 @@
 import express from "express";
 import {
   createSkill,
-  getAllSkills,
+  getAllSkills, // <-- Now Publicly available
   getSkillById,
   updateSkill,
   deleteSkill,
@@ -14,7 +14,7 @@ import { protect } from "../middlewares/authMiddleware.js";
 const router = express.Router();
 
 // Public routes
-router.get("/", getAllSkills);
+router.get("/", getAllSkills); // Route for fetching all skills (for filter dropdowns)
 router.get("/:id", getSkillById);
 
 // Protected routes

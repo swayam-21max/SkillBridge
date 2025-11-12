@@ -1,11 +1,12 @@
 // client/src/pages/SignupPage.jsx
-import React, { useState, useEffect } from 'react'; // ADDITION: useEffect
+import React, { useState, useEffect } from 'react'; 
 import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { useDispatch, useSelector } from 'react-redux';
-import { signupUser } from '../redux/authSlice'; // Corrected Path
+import { signupUser, verifyOtp, resetSignupState } from '../redux/authSlice'; // Corrected Path & new actions
 import FormInput from '../components/FormInput';
-import PasswordStrengthMeter from '../components/PasswordStrengthMeter'; // ADDITION: Import Meter
+import PasswordStrengthMeter from '../components/PasswordStrengthMeter'; 
+import Loader from '../components/Loader';
 import './SignupPage.css';
 
 const SignupPage = () => {
@@ -16,29 +17,43 @@ const SignupPage = () => {
     confirmPassword: '',
     role: 'learner',
   });
+  const [otp, setOtp] = useState(''); // New state for OTP
   const [errors, setErrors] = useState({});
-  
-  // --- ADDITION 1: State for real-time form validation ---
   const [isFormValid, setIsFormValid] = useState(false);
 
-  // --- Redux & Navigation Hooks (Your code is correct) ---
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { isLoading, error: apiError } = useSelector((state) => state.auth);
+  // Destructure new state properties
+  const { isLoading, error: apiError, user, signupStatus, otpEmail } = useSelector((state) => state.auth);
+
+  // Clear signup status on unmount to reset form
+  useEffect(() => {
+    return () => {
+      dispatch(resetSignupState());
+    };
+  }, [dispatch]);
+
+  // Redirect learner immediately
+  useEffect(() => {
+    if (user && user.role === 'learner') {
+      navigate('/profile');
+    }
+  }, [user, navigate]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
   };
+  
+  const handleOtpChange = (e) => {
+    setOtp(e.target.value);
+    setErrors({});
+  };
 
   const validateForm = () => {
     const newErrors = {};
     if (!formData.fullName) newErrors.fullName = 'Full Name is required';
-    if (!formData.email) {
-      newErrors.email = 'Email is required';
-    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-      newErrors.email = 'Email is invalid';
-    }
+    if (!formData.email || !/\S+@\S+\.\S+/.test(formData.email)) newErrors.email = 'Valid Email is required';
     if (!formData.password) newErrors.password = 'Password is required';
     if (formData.password !== formData.confirmPassword) {
       newErrors.confirmPassword = 'Passwords do not match';
@@ -46,7 +61,6 @@ const SignupPage = () => {
     return newErrors;
   };
 
-  // --- ADDITION 2: useEffect to validate form on every change ---
   useEffect(() => {
     const formErrors = validateForm();
     const allFieldsFilled = formData.fullName && formData.email && formData.password && formData.confirmPassword;
@@ -56,8 +70,25 @@ const SignupPage = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!isFormValid) { // Use the state to check validity
-      setErrors(validateForm()); // Show errors if trying to submit an invalid form
+    
+    if (signupStatus === 'otp_pending') {
+        // --- OTP SUBMISSION ---
+        if (!otp || otp.length !== 6) {
+            setErrors({ otp: 'OTP must be 6 digits' });
+            return;
+        }
+        
+        const resultAction = await dispatch(verifyOtp({ email: otpEmail, otp }));
+        if (verifyOtp.fulfilled.match(resultAction)) {
+          alert('Trainer Verification successful! Redirecting to your dashboard.');
+          navigate('/trainer/dashboard'); // Redirect to new trainer dashboard
+        }
+        return;
+    }
+
+    // --- INITIAL SIGNUP SUBMISSION ---
+    if (!isFormValid) { 
+      setErrors(validateForm());
       return;
     }
     
@@ -72,11 +103,55 @@ const SignupPage = () => {
     const resultAction = await dispatch(signupUser(userData));
     
     if (signupUser.fulfilled.match(resultAction)) {
-      alert('Signup successful! Please log in.');
-      navigate('/login');
+        if (userData.role === 'learner') {
+            alert('Learner Signup successful! Welcome.');
+            navigate('/profile');
+        } 
+        // Trainer flow handles itself by moving to OTP state
     }
   };
+  
+  // --- Conditional Render: OTP Verification Form ---
+  if (signupStatus === 'otp_pending') {
+    return (
+        <motion.div
+            className="signup-page-container"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.8 }}
+        >
+            <div className="card signup-card shadow-lg p-5">
+                <h2 className="text-center fw-bold mb-4">Verify Your Account</h2>
+                {apiError && <div className="alert alert-danger">{apiError}</div>}
+                <div className="alert alert-info text-center">
+                    A verification code has been sent to **{otpEmail}** (Check console for mock OTP).
+                    Please enter it below to complete your Trainer registration.
+                </div>
+                <form onSubmit={handleSubmit} noValidate>
+                    <FormInput
+                        label="Verification Code (OTP)" type="text" name="otp"
+                        value={otp} onChange={handleOtpChange} error={errors.otp}
+                    />
+                    <motion.button
+                        type="submit"
+                        className="btn btn-primary-custom w-100 py-2 fs-5 mt-3"
+                        whileHover={{ scale: 1.02 }}
+                        whileTap={{ scale: 0.98 }}
+                        disabled={isLoading || otp.length !== 6}
+                    >
+                        {isLoading ? <Loader /> : 'Verify & Complete'}
+                    </motion.button>
+                </form>
+                <p className="text-center text-muted mt-3">
+                  Did not receive the code? <Link onClick={() => { /* Implement Resend Logic Here */ }}>Resend OTP</Link>
+                </p>
+            </div>
+        </motion.div>
+    );
+  }
 
+
+  // --- Default Render: Signup Form ---
   return (
     <motion.div
       className="signup-page-container"
@@ -106,7 +181,6 @@ const SignupPage = () => {
                   value={formData.password} onChange={handleChange} error={errors.password}
                 />
                 
-                {/* --- ADDITION 3: Password Strength Meter --- */}
                 <PasswordStrengthMeter password={formData.password} />
 
                 <FormInput
@@ -132,7 +206,6 @@ const SignupPage = () => {
                   </div>
                 </div>
 
-                {/* --- ADDITION 4: Terms of Service & Privacy Policy --- */}
                 <div className="text-center text-muted small mb-3">
                   By creating an account, you agree to our <Link to="/terms">Terms of Service</Link> and <Link to="/privacy">Privacy Policy</Link>.
                 </div>
@@ -142,13 +215,12 @@ const SignupPage = () => {
                   className="btn btn-primary-custom w-100 py-2 fs-5"
                   whileHover={{ scale: isFormValid ? 1.02 : 1 }}
                   whileTap={{ scale: isFormValid ? 0.98 : 1 }}
-                  disabled={!isFormValid || isLoading} // MODIFICATION: Button is now disabled based on real-time validation
+                  disabled={!isFormValid || isLoading} 
                 >
                   {isLoading ? 'Creating Account...' : 'Create Account'}
                 </motion.button>
               </form>
               
-              {/* --- ADDITION 5: Social Logins --- */}
               <div className="social-login-divider">OR</div>
               <button className="btn btn-outline-secondary btn-social">
                 Sign Up with Google

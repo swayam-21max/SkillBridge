@@ -4,7 +4,7 @@ import prisma from "./config/db.js";          // Prisma client imported
 import authRoutes from "./routes/authRoutes.js";
 import courseRoutes from "./routes/courseRoutes.js";
 import skillRoutes from "./routes/skillRoutes.js";
-import enrollmentRoutes from "./routes/enrollmentRoutes.js"; // <-- 1. IMPORT
+import enrollmentRoutes from "./routes/enrollmentRoutes.js"; 
 
 const app = express();
 
@@ -16,7 +16,7 @@ app.use(express.json());
 app.use("/api/auth", authRoutes);
 app.use("/api/courses", courseRoutes);
 app.use("/api/skills", skillRoutes);
-app.use("/api/enrollments", enrollmentRoutes); // <-- 2. USE NEW ROUTES
+app.use("/api/enrollments", enrollmentRoutes); 
 
 // Test route
 app.get("/", (req, res) => {

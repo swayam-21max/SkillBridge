@@ -4,14 +4,14 @@ import Header from './components/Header';
 import Footer from './components/Footer';
 import PrivateRoute from './components/PrivateRoute';
 
-// FIX: Corrected all import paths to match your file names
 import HomePage from './pages/Home';
 import LoginPage from './pages/Login';
 import SignupPage from './pages/Register';
 import CoursesPage from './pages/CoursesPage';
 import ProfilePage from './pages/Profile';
-import AboutPage from './pages/AboutPage'; // This one was already correct
-import CourseDetailsPage from './pages/CourseDetailsPage'; // <-- 1. IMPORT
+import AboutPage from './pages/AboutPage';
+import CourseDetailsPage from './pages/CourseDetailsPage'; 
+import TrainerDashboard from './pages/TrainerDashboard'; // <-- IMPORT NEW PAGE
 
 function App() {
   return (
@@ -31,6 +31,11 @@ function App() {
             {/* Protected Routes */}
             <Route path="/profile" element={<PrivateRoute />}>
               <Route path="" element={<ProfilePage />} />
+            </Route>
+            
+            {/* NEW: Trainer Dashboard */}
+            <Route path="/trainer/dashboard" element={<PrivateRoute />}>
+              <Route path="" element={<TrainerDashboard />} />
             </Route>
             
           </Routes>
