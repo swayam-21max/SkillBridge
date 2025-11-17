@@ -2,9 +2,23 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import api from '../services/api';
 
+// NEW THUNK: Fetch courses for the logged-in trainer
+export const fetchTrainerCourses = createAsyncThunk(
+  'courses/fetchTrainerCourses',
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await api.get('/courses/trainer');
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response.data);
+    }
+  }
+);
+
+
 export const fetchCourses = createAsyncThunk(
+// ... (fetchCourses definition remains unchanged)
   'courses/fetchCourses',
-  // Accepts a params object for search/filter/sort
   async (params = {}, { rejectWithValue }) => {
     try {
       // Use URLSearchParams to correctly format query parameters
@@ -18,6 +32,7 @@ export const fetchCourses = createAsyncThunk(
 );
 
 export const fetchCourseById = createAsyncThunk(
+// ... (fetchCourseById definition remains unchanged)
   'courses/fetchCourseById',
   async (courseId, { rejectWithValue }) => {
     try {
@@ -34,6 +49,10 @@ const coursesSlice = createSlice({
   initialState: {
     all: [],
     selectedCourse: null, 
+    // ADDED: State for trainer-specific courses
+    trainerCourses: [],
+    trainerStatus: 'idle', // 'idle' | 'loading' | 'succeeded' | 'failed'
+    // End ADDED
     status: 'idle', // 'idle' | 'loading' | 'succeeded' | 'failed'
     selectedStatus: 'idle',
     error: null,
@@ -46,6 +65,7 @@ const coursesSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
+      // Fetch All Courses (remains unchanged)
       .addCase(fetchCourses.pending, (state) => {
         state.status = 'loading';
       })
@@ -57,6 +77,7 @@ const coursesSlice = createSlice({
         state.status = 'failed';
         state.error = action.payload ? action.payload.error : 'Could not fetch courses';
       })
+      // Fetch Single Course (remains unchanged)
       .addCase(fetchCourseById.pending, (state) => {
         state.selectedStatus = 'loading';
       })
@@ -67,6 +88,19 @@ const coursesSlice = createSlice({
       .addCase(fetchCourseById.rejected, (state, action) => {
         state.selectedStatus = 'failed';
         state.error = action.payload ? action.payload.error : 'Could not fetch course';
+      })
+      // Fetch Trainer Courses (NEW)
+      .addCase(fetchTrainerCourses.pending, (state) => {
+        state.trainerStatus = 'loading';
+        state.error = null;
+      })
+      .addCase(fetchTrainerCourses.fulfilled, (state, action) => {
+        state.trainerStatus = 'succeeded';
+        state.trainerCourses = action.payload;
+      })
+      .addCase(fetchTrainerCourses.rejected, (state, action) => {
+        state.trainerStatus = 'failed';
+        state.error = action.payload ? action.payload.error : 'Could not fetch your courses';
       });
   },
 });
