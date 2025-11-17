@@ -1,7 +1,7 @@
 // client/src/components/TrainerCourseCard.jsx
 import React from 'react';
 import { motion } from 'framer-motion';
-import { BookOpen, Users, Star, Edit3, Trash2 } from 'lucide-react';
+import { BookOpen, Users, Star, Edit3, Trash2, Tag } from 'lucide-react'; // Added Tag icon
 
 const TrainerCourseCard = ({ course }) => {
   // Destructure with default values
@@ -13,10 +13,13 @@ const TrainerCourseCard = ({ course }) => {
     enrollmentCount = 0,
     averageRating = 0,
     reviewCount = 0,
-    id, // assuming we will need this for routing later
+    skill, // Access the skill object
+    id,
   } = course;
 
-  // Placeholder functions for management actions
+  // Handle cases where skill might be undefined/null
+  const categoryName = skill ? skill.name : 'Uncategorized';
+
   const handleEdit = () => alert(`Edit course ${title} (ID: ${id})`);
   const handleDelete = () => alert(`Delete course ${title} (ID: ${id})`);
 
@@ -32,7 +35,15 @@ const TrainerCourseCard = ({ course }) => {
         alt={title} 
       />
       <div className="card-body d-flex flex-column">
-        <h5 className="card-title mt-1 fw-bold">{title}</h5>
+        {/* FIX: Category Badge */}
+        <div className="mb-2">
+           <span className="badge bg-primary-subtle text-primary-emphasis d-inline-flex align-items-center">
+              <Tag size={12} className="me-1"/> {categoryName}
+           </span>
+        </div>
+
+        <h5 className="card-title fw-bold">{title}</h5>
+        
         <div className="d-flex justify-content-between text-muted small mb-3">
           <span className="d-flex align-items-center me-3">
             <BookOpen size={16} className="me-1" /> {teachingHours} Hrs

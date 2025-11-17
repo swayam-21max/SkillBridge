@@ -17,19 +17,19 @@ const CourseCard = ({ course }) => {
     title, 
     price, 
     image, 
-    trainer, 
-    averageRating = 0, // Default to 0 if not rated
-    reviewCount = 0,    // Default to 0 if no reviews
-    difficulty = 'N/A' // Use the calculated difficulty
+    // Destructure trainer, ensuring it defaults to an empty object if null
+    trainer = {}, 
+    averageRating = 0, 
+    reviewCount = 0,    
+    difficulty = 'N/A'
   } = course;
   // -----------------------------------------------------
   
   const trainerImage = 'https://via.placeholder.com/40';
 
   const handleEnroll = (e) => {
-    e.preventDefault(); // Prevent link navigation
+    e.preventDefault(); 
     if (!user) {
-      // Use toast instead of alert
       toast.error('Please log in to enroll in a course.');
       return;
     }
@@ -73,8 +73,15 @@ const CourseCard = ({ course }) => {
         <h5 className="card-title mt-1">{title}</h5>
         
         <div className="d-flex align-items-center my-3">
-          <img src={trainerImage} alt={trainer.name} className="rounded-circle me-2" width="40" height="40" />
-          <span className="trainer-name">{trainer.name}</span>
+          <img 
+            src={trainerImage} 
+            alt={trainer.name || 'Unknown Trainer'} 
+            className="rounded-circle me-2" 
+            width="40" 
+            height="40" 
+          />
+          {/* FIX: Safely access trainer.name */}
+          <span className="trainer-name">{trainer.name || 'Unknown Trainer'}</span>
         </div>
 
         <div className="mt-auto d-flex justify-content-between align-items-center">

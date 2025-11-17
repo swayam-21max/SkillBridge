@@ -99,17 +99,24 @@ const CoursesPage = () => {
     if (courseStatus === 'failed') {
       return <div className="alert alert-danger">{courseError || 'Failed to load courses.'}</div>;
     }
-
-    if (courseStatus === 'succeeded' && courses.length === 0) {
+    
+    // Safety check to ensure `courses` is an array before trying to map
+    if (!Array.isArray(courses) || courses.length === 0) {
         return <div className="text-center py-5"><p className="lead">No courses found matching your criteria.</p></div>;
     }
 
     return (
       <div className="row g-4">
         {courses.map((course) => (
-          <div className="col-lg-4 col-md-6" key={course.id}>
-            <CourseCard course={course} />
-          </div>
+          // Skip any course object that is clearly malformed (e.g., missing essential data like a trainer)
+          course && course.trainer ? (
+            <div className="col-lg-4 col-md-6" key={course.id}>
+              <CourseCard course={course} />
+            </div>
+          ) : (
+            // Optionally log courses that are skipped due to missing essential data
+            console.warn(`Skipping malformed course: ${course?.title || course?.id}`) && null 
+          )
         ))}
       </div>
     );
